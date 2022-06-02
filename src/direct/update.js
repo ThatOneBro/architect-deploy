@@ -13,7 +13,7 @@ let hydrate = require('@architect/hydrate')
  * @param {String} params.lambda - Inventory Lambda object
  */
 module.exports = function updateLambda (params, callback) {
-  let { env, FunctionName, region, src, update } = params
+  let { env, FunctionName, region, src, update, shouldHydrate } = params
   let lambda = new aws.Lambda({ region })
 
   // Check the Lambda lifecycle state after each mutation to prevent async update issues
@@ -35,7 +35,8 @@ module.exports = function updateLambda (params, callback) {
   series([
     // Hydrate the Lambda
     function (callback) {
-      hydrate.install({ autoinstall: true, basepath: src }, callback)
+      if (shouldHydrate)
+        hydrate.install({ autoinstall: true, basepath: src }, callback)
     },
 
     // Zip its contents
